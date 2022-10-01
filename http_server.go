@@ -44,7 +44,7 @@ func NewServer(handler http.Handler, opts ...Option) *Server {
 }
 
 // Start starts the server.
-func (s *Server) Start(ctx context.Context) <-chan error {
+func (s *Server) Start(ctx context.Context) error {
 	go func() {
 		<-ctx.Done()
 		if err := s.Shutdown(); err != nil {
@@ -58,7 +58,7 @@ func (s *Server) Start(ctx context.Context) <-chan error {
 		}
 	}()
 
-	return s.errors
+	return <-s.errors
 }
 
 // Shutdown gracefully shuts down the server without interrupting any active connections.
