@@ -72,3 +72,8 @@ func (s *Server) Shutdown() error {
 
 	return nil
 }
+
+// Addr returns the server's network address.
+func (s *Server) Addr() string {
+	return s.server.Addr
+}

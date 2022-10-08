@@ -7,8 +7,8 @@ import (
 // Option is a server option.
 type Option func(*Server)
 
-// Addr set address for server.
-func Addr(addr string) Option {
+// BindAddr set address for server.
+func BindAddr(addr string) Option {
 	return func(s *Server) {
 		s.server.Addr = addr
 	}
