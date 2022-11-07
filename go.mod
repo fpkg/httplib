@@ -1,3 +1,3 @@
-module github.com/shkmv/httplib
+module github.com/fpkg/httplib
 
 go 1.19
