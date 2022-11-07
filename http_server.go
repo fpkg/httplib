@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	defaultReadTimeout     = 5 * time.Second
-	defaultWriteTimeout    = 5 * time.Second
+	defaultReadTimeout     = time.Second * 5 
+	defaultWriteTimeout    = time.Second * 5 
 	defaultAddr            = ":8080"
-	defaultShutdownTimeout = 3 * time.Second
+	defaultShutdownTimeout = time.Second * 3
 )
 
 // Server implements http server.
