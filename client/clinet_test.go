@@ -14,6 +14,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDefaultHeader(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Custom-Header") != "default" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(dummyResponse{Message: "header ok"})
+	}))
+	defer server.Close()
+
+	cli := client.NewClient(client.WithDefaultHeader("X-Custom-Header", "default"))
+	var out dummyResponse
+	err := cli.GetJSON(context.Background(), server.URL, &out)
+	assert.NoError(t, err)
+	assert.Equal(t, "header ok", out.Message)
+}
+
 // dummyResponse is a helper struct for JSON responses.
 type dummyResponse struct {
 	Message string `json:"message"`
