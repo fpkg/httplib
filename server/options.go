@@ -1,4 +1,4 @@
-package httplib
+package server
 
 import (
 	"time"
@@ -7,8 +7,8 @@ import (
 // Option is a server option.
 type Option func(*Server)
 
-// WithServerAddr set address for server.
-func WithServerAddr(addr string) Option {
+// WithAddr set address for server.
+func WithAddr(addr string) Option {
 	return func(s *Server) {
 		s.server.Addr = addr
 	}

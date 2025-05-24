@@ -15,11 +15,12 @@ import (
 type BackoffStrategy func(attempt int) time.Duration
 
 // Client wraps an http.Client with retry logic and JSON helpers.
-type Client struct {
-	httpClient *http.Client
-	retryCount int
-	backoff    BackoffStrategy
-}
+	type Client struct {
+		httpClient *http.Client
+		retryCount int
+		backoff    BackoffStrategy
+		headers    map[string]string
+	}
 
 // ClientOption configures the Client.
 type ClientOption func(*Client)
@@ -44,7 +45,14 @@ func WithBackoffStrategy(bs BackoffStrategy) ClientOption {
 		c.backoff = bs
 	}
 }
-
+ 
+// WithDefaultHeader adds a default header to be included on all requests.
+func WithDefaultHeader(key, value string) ClientOption {
+	return func(c *Client) {
+		c.headers[key] = value
+	}
+}
+ 
 // NewClient constructs a Client with sensible defaults.
 // Defaults: timeout=30s, retries=3, backoff=exponential (attempt * 500ms).
 func NewClient(opts ...ClientOption) *Client {
@@ -54,6 +62,7 @@ func NewClient(opts ...ClientOption) *Client {
 		backoff: func(attempt int) time.Duration {
 			return time.Duration(attempt) * 500 * time.Millisecond
 		},
+		headers: make(map[string]string),
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -89,6 +98,11 @@ func (c *Client) doJSON(ctx context.Context, method, url string, body any, dest 
 		return fmt.Errorf("create request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json")
+	for k, v := range c.headers {
+		if req.Header.Get(k) == "" {
+			req.Header.Set(k, v)
+		}
+	}
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
